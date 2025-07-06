@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 06, 2025 at 11:28 AM
+-- Generation Time: Jul 06, 2025 at 01:55 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,25 @@ SET time_zone = "+00:00";
 --
 -- Database: `nrega`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `activity_table`
+--
+
+CREATE TABLE `activity_table` (
+  `activityID` int(11) NOT NULL,
+  `userID` int(11) NOT NULL,
+  `districtID` int(11) NOT NULL,
+  `talukID` int(11) NOT NULL,
+  `fromLocation` varchar(30) DEFAULT NULL,
+  `FromDateAndTime` datetime DEFAULT NULL,
+  `toLoc` varchar(30) DEFAULT NULL,
+  `toDateAndTime` datetime DEFAULT NULL,
+  `activityDone` varchar(1000) DEFAULT NULL,
+  `activityImage` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -324,11 +343,18 @@ INSERT INTO `user_table` (`userID`, `userName`, `password`, `districtID`, `taluk
 (28, 'Uttara Kannada_admin', 'admin@123', 28, NULL, 1, 'admin'),
 (29, 'Vijayanagara_admin', 'admin@123', 29, NULL, 1, 'admin'),
 (30, 'Vijayapura_admin', 'admin@123', 30, NULL, 1, 'admin'),
-(31, 'Yadgir_admin', 'admin@123', 31, NULL, 1, 'admin');
+(31, 'Yadgir_admin', 'admin@123', 31, NULL, 1, 'admin'),
+(32, 'dummyUser', '$2y$10$YOx5LzO5CEV7paUaVSHa6OEBuGPNbjgadGHD.eWqxqQl5cqn3od3m', 12, 70, 1, 'user');
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `activity_table`
+--
+ALTER TABLE `activity_table`
+  ADD PRIMARY KEY (`activityID`);
 
 --
 -- Indexes for table `districts`
@@ -358,6 +384,12 @@ ALTER TABLE `user_table`
 --
 
 --
+-- AUTO_INCREMENT for table `activity_table`
+--
+ALTER TABLE `activity_table`
+  MODIFY `activityID` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `districts`
 --
 ALTER TABLE `districts`
@@ -373,7 +405,7 @@ ALTER TABLE `taluks`
 -- AUTO_INCREMENT for table `user_table`
 --
 ALTER TABLE `user_table`
-  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `userID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- Constraints for dumped tables
