@@ -24,7 +24,7 @@ if ($result->num_rows === 1) {
     if (password_verify($password, $user['password'])) {
         // Valid user → start session
         $_SESSION['user_id']     = $user['userID'];
-        $_SESSION['username']    = $user['username'];
+        $_SESSION['username']    = $user['userName'];
         $_SESSION['district_id'] = $user['districtID'];
         $_SESSION['taluk_id']    = $user['talukID'];
         $_SESSION['role']        = 'user';
