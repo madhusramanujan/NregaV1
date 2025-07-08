@@ -3,7 +3,7 @@ include 'includes/db_connect.php';
 include 'includes/header.php';
 
 $selectedDistrict = $_POST['districtID'] ?? '';
-
+$selectedTaluk = $_POST['talukID'] ?? '';
 ?>
 
 <h3 class="text-center mb-4">Admin Login</h3>
@@ -25,6 +25,22 @@ $selectedDistrict = $_POST['districtID'] ?? '';
   </div>
 
  
+  <!-- Taluk Dropdown -->
+  <div class="mb-3">
+    <label>Taluk</label>
+    <select name="talukID" class="form-select" required>
+      <option value="">Select Taluk</option>
+      <?php
+      if (!empty($selectedDistrict)) {
+        $taluks = mysqli_query($conn, "SELECT talukID, taluk_name FROM Taluks WHERE districtID = $selectedDistrict");
+        while ($t = mysqli_fetch_assoc($taluks)) {
+          $selected = ($t['talukID'] == $selectedTaluk) ? 'selected' : '';
+          echo "<option value='{$t['talukID']}' $selected>{$t['taluk_name']}</option>";
+        }
+      }
+      ?>
+    </select>
+  </div>
 
   <!-- Username -->
   <div class="mb-3">

@@ -9,6 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 $userID     = $_SESSION['user_id'];
 $districtID = $_SESSION['district_id'];
 $talukID    = $_SESSION['taluk_id'];
+$role       = $_SESSION['role'];
 
 $fromLoc     = $_POST['fromLocation'];
 $fromDate    = $_POST['FromDateAndTime'];
@@ -48,8 +49,14 @@ if ($activityID) {
     }
 
     if ($stmt->execute()) {
-        header("Location: userDashboard.php");
-        exit;
+        if($role=="user"){
+            header("Location: userDashboard.php");
+            exit;    
+        }else{
+            header("Location: adminDashboard.php");
+            exit;
+        }
+
     } else {
         echo "Update Error: " . $stmt->error;
     }
@@ -62,8 +69,13 @@ if ($activityID) {
     $stmt->bind_param("iiissssss", $userID, $districtID, $talukID, $fromLoc, $fromDate, $toLoc, $toDate, $activity, $imagePath);
 
     if ($stmt->execute()) {
-        header("Location: userDashboard.php");
-        exit;
+        if($role=="user"){
+            header("Location: userDashboard.php");
+            exit;    
+        }else{
+            header("Location: adminDashboard.php");
+            exit;
+        }
     } else {
         echo "Insert Error: " . $stmt->error;
     }
