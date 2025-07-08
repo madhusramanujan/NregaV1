@@ -3,7 +3,7 @@ require('fpdf/fpdf.php');
 include 'includes/db_connect.php';
 session_start();
 
-// ✅ Always check session before using session vars
+// Check session
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'user') {
     die("Unauthorized access.");
 }
@@ -33,36 +33,24 @@ class PDF extends FPDF {
         $wmax = ($w - 2 * $this->cMargin) * 1000 / $this->FontSize;
         $s = str_replace("\r", '', $txt);
         $nb = strlen($s);
-        if ($nb > 0 && $s[$nb - 1] == "\n")
-            $nb--;
+        if ($nb > 0 && $s[$nb - 1] == "\n") $nb--;
         $sep = -1;
-        $i = 0;
-        $j = 0;
-        $l = 0;
-        $nl = 1;
+        $i = 0; $j = 0; $l = 0; $nl = 1;
         while ($i < $nb) {
             $c = $s[$i];
             if ($c == "\n") {
-                $i++;
-                $sep = -1;
-                $j = $i;
-                $l = 0;
-                $nl++;
+                $i++; $sep = -1; $j = $i; $l = 0; $nl++;
                 continue;
             }
-            if ($c == ' ')
-                $sep = $i;
-            $l += $cw[$c];
+            if ($c == ' ') $sep = $i;
+            $l += $cw[$c] ?? 0;
             if ($l > $wmax) {
                 if ($sep == -1) {
-                    if ($i == $j)
-                        $i++;
-                } else
+                    if ($i == $j) $i++;
+                } else {
                     $i = $sep + 1;
-                $sep = -1;
-                $j = $i;
-                $l = 0;
-                $nl++;
+                }
+                $sep = -1; $j = $i; $l = 0; $nl++;
             } else {
                 $i++;
             }
@@ -71,10 +59,13 @@ class PDF extends FPDF {
     }
 }
 
+define('FPDF_FONTPATH', __DIR__ . '/fpdf/font/');
+
 // ✅ Create PDF
 $pdf = new PDF('L', 'mm', 'A4');
 $pdf->AddPage();
-$pdf->SetFont('Arial', 'B', 14);
+$pdf->AddFont('NotoSansKannada', '', 'NotoSansKannada.php');
+$pdf->SetFont('NotoSansKannada', '', 11);
 $pdf->Cell(0, 10, 'NREGA User Activity Report', 0, 1, 'C');
 
 // ✅ Column setup
@@ -97,16 +88,15 @@ $res = mysqli_query($conn, "SELECT * FROM activity_table WHERE $filterClause ORD
 
 
 $sn = 1;
-$pdf->SetFont('Arial', '', 9);
+$pdf->SetFont('NotoSansKannada', '', 10);
 
 while ($row = mysqli_fetch_assoc($res)) {
-    $activityHeight = $pdf->getMultiCellHeight($widths[5], 6, $row['activityDone']);
-    $minRowHeight = 20;
+    $activityText = $row['activityDone'];
+    $activityHeight = $pdf->getMultiCellHeight($widths[5], 5, $activityText);
+    $rowHeight = max($activityHeight, 20);
 
     $imageExists = (!empty($row['activityImage']) && file_exists("uploads/{$row['activityImage']}"));
-    $imageHeight = $imageExists ? 20 : 0;
-
-    $rowHeight = max($activityHeight, $minRowHeight, $imageHeight);
+    if ($imageExists) $rowHeight = max($rowHeight, 22);
 
     // Store Y to align row
     $yStart = $pdf->GetY();
@@ -121,23 +111,16 @@ while ($row = mysqli_fetch_assoc($res)) {
     // Activity (wrapped)
     $xAct = $pdf->GetX();
     $yAct = $pdf->GetY();
+    $pdf->Rect($xAct, $yAct, $widths[5], $rowHeight);
+    $pdf->SetXY($xAct + 1, $yAct + 1);
 
-// Draw activity cell with fixed size and internal wrapped text
-    $activityText = utf8_decode($row['activityDone']);
-    $lines = explode("\n", wordwrap($activityText, 60)); // control wrapping manually
-    $lineHeight = 5;
-    $cellTop = $pdf->GetY();
-    $cellLeft = $pdf->GetX();
-    $pdf->Rect($cellLeft, $cellTop, $widths[5], $rowHeight); // Draw border
-
-    // Write each line with padding
-    foreach ($lines as $i => $line) {
-        $pdf->SetXY($cellLeft + 1, $cellTop + ($i * $lineHeight));
-        $pdf->Cell($widths[5] - 2, $lineHeight, $line, 0, 0);
+    $wrappedText = explode("\n", wordwrap($activityText, 55));
+    foreach ($wrappedText as $i => $line) {
+        $pdf->Cell($widths[5] - 2, 5, $line, 0);
+        $pdf->Ln();
+        $pdf->SetX($xAct + 1);
     }
-
-    // Move X to the right of activity cell
-    $pdf->SetXY($cellLeft + $widths[5], $cellTop);
+    $pdf->SetXY($xAct + $widths[5], $yAct);
 
 
     // Image cell
