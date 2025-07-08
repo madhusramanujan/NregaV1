@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 06, 2025 at 01:55 PM
+-- Generation Time: Jul 08, 2025 at 10:30 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,7 +20,7 @@ SET time_zone = "+00:00";
 --
 -- Database: `nrega`
 --
-USE nrega;
+
 -- --------------------------------------------------------
 
 --
@@ -39,6 +39,17 @@ CREATE TABLE `activity_table` (
   `activityDone` varchar(1000) DEFAULT NULL,
   `activityImage` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `activity_table`
+--
+
+INSERT INTO `activity_table` (`activityID`, `userID`, `districtID`, `talukID`, `fromLocation`, `FromDateAndTime`, `toLoc`, `toDateAndTime`, `activityDone`, `activityImage`) VALUES
+(2, 32, 12, 70, 'Davangere', '2025-07-06 01:01:00', 'Honnalli', '2025-07-06 01:06:00', 'I went from Davangere to Honnalli today', '1751819609_Screenshot 2025-06-18 203836.png'),
+(3, 32, 12, 70, 'Davangere', '2025-07-07 14:08:00', 'Nyamati', '2025-07-07 16:13:00', 'From Davangere to Nyamati all the required activities has been done', '1751873979_nature.jpg'),
+(4, 32, 12, 70, 'ಬೆಂಗಳೂರು', '2025-07-05 10:30:00', 'ಕೊಪ್ಪಳ', '2025-07-05 18:29:00', 'ನಾಳೆ ನಮ್ಮ ಊರಿನಲ್ಲಿ ಹಬ್ಬದ ಉತ್ಸವವಿದೆ. ಮುಂಜಾವಿನಿಂದಲೇ ಜನರು ದೇವಸ್ಥಾನಕ್ಕೆ ಹೋಗಿ ಪೂಜೆ ಸಲ್ಲಿಸುತ್ತಾರೆ. ರಸ್ತೆಗಳಲ್ಲಿ ಹೂವಿನ ವಾಸನೆ ತುಂಬಿರುತ್ತದೆ ಮತ್ತು ಎಲ್ಲೆಲ್ಲೂ ಸಂಭ್ರಮದ ವಾತಾವರಣ ಕಂಡುಬರುತ್ತದೆ. ಮಕ್ಕಳು ಹೊಸ ಬಟ್ಟೆ ತೊಟ್ಟು ಆಟವಾಡುತ್ತಾ ಕಾಣಿಸುತ್ತಾರೆ. ಮನೆಮನೆಯಲ್ಲೂ ಹಲವಾರು ವಿಧದ ತಿಂಡಿಗಳು ತಯಾರಾಗುತ್ತವೆ. ಹತ್ತಿರದ ಬಂಧುಗಳು, ಸ್ನೇಹಿತರು ಸೇರಿ ಸಂತೋಷದಿಂದ ಸಮಯ ಕಳೆಯುತ್ತಾರೆ. ಈ ರೀತಿಯ ಹಬ್ಬಗಳು ಸಮಾಜದಲ್ಲಿ ಒಗ್ಗಟ್ಟು ಮತ್ತು ಸಹಭಾವನೆ ತರುವಲ್ಲಿ ಸಹಾಯಕವಾಗುತ್ತವೆ.', '1751893308_elephant.jpeg'),
+(5, 32, 12, 70, 'Harihara', '2025-07-07 20:40:00', 'Davangere', '2025-07-07 23:43:00', 'went from harihara to Dav', '1751901051_elephant.jpeg'),
+(6, 32, 12, 70, 'Bnaglore', '2025-07-08 11:45:00', 'haveri', '2025-07-08 17:51:00', 'To meet abhi', '1751955346_nature.jpg');
 
 -- --------------------------------------------------------
 
@@ -387,7 +398,7 @@ ALTER TABLE `user_table`
 -- AUTO_INCREMENT for table `activity_table`
 --
 ALTER TABLE `activity_table`
-  MODIFY `activityID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `activityID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `districts`
