@@ -82,7 +82,7 @@ $res = mysqli_query($conn, "SELECT * FROM activity_table WHERE $whereClause ORDE
       <form action="userExportPdf.php" method="GET" class="mb-0">
         <input type="hidden" name="from" value="<?php echo $_GET['from'] ?? ''; ?>">
         <input type="hidden" name="to" value="<?php echo $_GET['to'] ?? ''; ?>">
-        <button type="submit" class="btn btn-outline-light btn-sm">📄 Export to PDF</button>
+        <button type="submit" class="btn btn-outline-light btn-sm">📄 Export to excel</button>
       </form>
     </div>
 

@@ -78,10 +78,10 @@ $res = mysqli_query($conn, "SELECT * FROM activity_table WHERE $whereClause ORDE
   <div class="card">
     <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
       <span>Your Activities</span>
-      <form action="userExportPdf.php" method="GET" class="mb-0">
+      <form action="userExportDoc.php" method="GET" class="mb-0">
         <input type="hidden" name="from" value="<?php echo $_GET['from'] ?? ''; ?>">
         <input type="hidden" name="to" value="<?php echo $_GET['to'] ?? ''; ?>">
-        <button type="submit" class="btn btn-outline-light btn-sm">📄 Export to PDF</button>
+        <button type="submit" class="btn btn-outline-light btn-sm">📄 Export to DOC</button>
       </form>
     </div>
 

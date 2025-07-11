@@ -1,140 +1,133 @@
 <?php
-require('fpdf/fpdf.php');
+require_once __DIR__ . '/vendor/autoload.php';
 include 'includes/db_connect.php';
 session_start();
+
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 // Check session
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'user') {
     die("Unauthorized access.");
 }
 
-// ✅ Now assign values safely
+// Get user details
 $userID = $_SESSION['user_id'];
 $username = $_SESSION['username'];
 
-// ✅ Handle optional date filters from GET
+// Handle optional date filters from GET
 $from = $_GET['from'] ?? '';
 $to = $_GET['to'] ?? '';
 
-$filterClause = "userID = $userID";
+$whereClause = "userID = $userID";
 if (!empty($from) && !empty($to)) {
     $fromDate = $from . " 00:00:00";
     $toDate   = $to . " 23:59:59";
-    $filterClause .= " AND FromDateAndTime BETWEEN '$fromDate' AND '$toDate'";
+    $whereClause .= " AND FromDateAndTime BETWEEN '$fromDate' AND '$toDate'";
 }
 
-// ✅ Custom class extending FPDF
-class PDF extends FPDF {
-    // Calculate approximate height of MultiCell content
-    function getMultiCellHeight($w, $h, $txt) {
-        $cw = &$this->CurrentFont['cw'];
-        if ($w == 0)
-            $w = $this->w - $this->rMargin - $this->x;
-        $wmax = ($w - 2 * $this->cMargin) * 1000 / $this->FontSize;
-        $s = str_replace("\r", '', $txt);
-        $nb = strlen($s);
-        if ($nb > 0 && $s[$nb - 1] == "\n") $nb--;
-        $sep = -1;
-        $i = 0; $j = 0; $l = 0; $nl = 1;
-        while ($i < $nb) {
-            $c = $s[$i];
-            if ($c == "\n") {
-                $i++; $sep = -1; $j = $i; $l = 0; $nl++;
-                continue;
-            }
-            if ($c == ' ') $sep = $i;
-            $l += $cw[$c] ?? 0;
-            if ($l > $wmax) {
-                if ($sep == -1) {
-                    if ($i == $j) $i++;
-                } else {
-                    $i = $sep + 1;
-                }
-                $sep = -1; $j = $i; $l = 0; $nl++;
-            } else {
-                $i++;
-            }
+// Fetch data from the database
+$res = mysqli_query($conn, "SELECT * FROM activity_table WHERE $whereClause ORDER BY FromDateAndTime DESC");
+
+// Configure Dompdf options
+$options = new Options();
+$options->set('isRemoteEnabled', true); // Enable loading of remote images
+$options->set('defaultFont', 'NotoSansKannada'); // Set default font to Noto Sans Kannada
+
+// Create a new Dompdf instance
+$dompdf = new Dompdf($options);
+
+// Start building the HTML content
+$html = '
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        @font-face {
+            font-family: "NotoSansKannada";
+            src: url("fonts/NotoSansKannada-Regular.ttf") format("truetype");
         }
-        return $nl * $h;
-    }
-}
+        body {
+            font-family: "NotoSansKannada", Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="text-align: center;">User Activity Report</h2>
+    <p><strong>Username:</strong> ' . htmlspecialchars($username) . '</p>
+    <p><strong>Date Range:</strong> ' . (!empty($from) ? htmlspecialchars($from) : 'N/A') . ' to ' . (!empty($to) ? htmlspecialchars($to) : 'N/A') . '</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Sl No</th>
+                <th>From Date & Time</th>
+                <th>From Location</th>
+                <th>To Location</th>
+                <th>To Date & Time</th>
+                <th>Activity Done</th>
+                <th>Image</th>
+            </tr>
+        </thead>
+        <tbody>';
 
-define('FPDF_FONTPATH', __DIR__ . '/fpdf/font/');
-
-// ✅ Create PDF
-$pdf = new PDF('L', 'mm', 'A4');
-$pdf->AddPage();
-$pdf->AddFont('NotoSansKannada', '', 'NotoSansKannada.php');
-$pdf->SetFont('NotoSansKannada', '', 11);
-$pdf->Cell(0, 10, 'NREGA User Activity Report', 0, 1, 'C');
-
-// ✅ Column setup
-$widths = [10, 35, 25, 25, 35, 100, 40];
-$headers = ['Sl', 'From DateTime', 'From', 'To', 'To DateTime', 'Activity', 'Image'];
-
-$pdf->SetFont('Arial', 'B', 10);
-foreach ($headers as $i => $text) {
-    $pdf->Cell($widths[$i], 10, $text, 1);
-}
-$pdf->Ln();
-
-// ✅ Fetch Data
-// $userID = $_SESSION['user_id'];
-$res = mysqli_query($conn, "SELECT * FROM activity_table WHERE $filterClause ORDER BY FromDateAndTime DESC");
-
-// $rowCount = mysqli_num_rows($res);
-// echo $rowCount;
-// exit;
-
-
+// Add table rows dynamically
 $sn = 1;
-$pdf->SetFont('NotoSansKannada', '', 10);
-
 while ($row = mysqli_fetch_assoc($res)) {
-    $activityText = $row['activityDone'];
-    $activityHeight = $pdf->getMultiCellHeight($widths[5], 5, $activityText);
-    $rowHeight = max($activityHeight, 20);
+    $html .= '<tr>';
+    $html .= '<td>' . $sn++ . '</td>';
+    $html .= '<td>' . htmlspecialchars($row['FromDateAndTime']) . '</td>';
+    $html .= '<td>' . htmlspecialchars($row['fromLocation']) . '</td>';
+    $html .= '<td>' . htmlspecialchars($row['toLoc']) . '</td>';
+    $html .= '<td>' . htmlspecialchars($row['toDateAndTime']) . '</td>';
+    $html .= '<td>' . htmlspecialchars($row['activityDone']) . '</td>';
+    if (!empty($row['activityImage']) && file_exists("uploads/{$row['activityImage']}")) {
+        // Convert the image to Base64
+        $imagePath = "uploads/" . htmlspecialchars($row['activityImage']);
+        $imageData = base64_encode(file_get_contents($imagePath));
+        $src = 'data:image/jpeg;base64,' . $imageData;
 
-    $imageExists = (!empty($row['activityImage']) && file_exists("uploads/{$row['activityImage']}"));
-    if ($imageExists) $rowHeight = max($rowHeight, 22);
-
-    // Store Y to align row
-    $yStart = $pdf->GetY();
-
-    // Print cells
-    $pdf->Cell($widths[0], $rowHeight, $sn++, 1);
-    $pdf->Cell($widths[1], $rowHeight, $row['FromDateAndTime'], 1);
-    $pdf->Cell($widths[2], $rowHeight, $row['fromLocation'], 1);
-    $pdf->Cell($widths[3], $rowHeight, $row['toLoc'], 1);
-    $pdf->Cell($widths[4], $rowHeight, $row['toDateAndTime'], 1);
-
-    // Activity (wrapped)
-    $xAct = $pdf->GetX();
-    $yAct = $pdf->GetY();
-    $pdf->Rect($xAct, $yAct, $widths[5], $rowHeight);
-    $pdf->SetXY($xAct + 1, $yAct + 1);
-
-    $wrappedText = explode("\n", wordwrap($activityText, 55));
-    foreach ($wrappedText as $i => $line) {
-        $pdf->Cell($widths[5] - 2, 5, $line, 0);
-        $pdf->Ln();
-        $pdf->SetX($xAct + 1);
-    }
-    $pdf->SetXY($xAct + $widths[5], $yAct);
-
-
-    // Image cell
-    if ($imageExists) {
-        $pdf->Cell($widths[6], $rowHeight, '', 1);
-        $pdf->Image("uploads/{$row['activityImage']}", $pdf->GetX() - $widths[6] + 10, $pdf->GetY() + 2, 20, 16);
+        // Embed the image in the table
+        $html .= '<td><img src="' . $src . '" alt="Activity Image"></td>';
     } else {
-        $pdf->Cell($widths[6], $rowHeight, 'No Image', 1);
+        $html .= '<td>No Image</td>';
     }
-
-    // Move to next row
-    $pdf->SetY($yStart + $rowHeight);
+    $html .= '</tr>';
 }
 
-// ✅ Output
-$pdf->Output('D', 'UserActivityReport.pdf');
+$html .= '
+        </tbody>
+    </table>
+</body>
+</html>';
+
+// Load the HTML content
+$dompdf->loadHtml($html);
+
+// Set paper size and orientation
+$dompdf->setPaper('A4', 'landscape');
+
+// Render the PDF
+$dompdf->render();
+
+// Output the PDF for download
+$dompdf->stream('UserActivityReport.pdf', ['Attachment' => true]);
 ?>
