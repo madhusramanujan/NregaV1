@@ -3,7 +3,7 @@ This is our first project <br>
 I have added index.php which will ask for type of login(admin/user), header.php and footer.php <br>
 We can use the header and footer in all our future files <br>
 Created database <br>
-User login for Daily activity entry
+User login is for Daily activity entry
 Admin login - he can view his workers activity daily basis and take a printout as and when required
 Admin can create the users
 Admin can Enable or Disable users (Planning to include in v2)
