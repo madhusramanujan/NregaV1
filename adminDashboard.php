@@ -50,7 +50,7 @@ $res = mysqli_query($conn, "SELECT * FROM activity_table WHERE $whereClause ORDE
   <div class="d-flex gap-2">
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#activityModal">Enter Activity</button>
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal">Create User</button>
-    <!-- <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adminEnDisModal">Enable/Disable User</button> -->
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adminEnDisModal">Enable/Disable User</button>
   </div>
   <a href="adminLogout.php" class="btn btn-danger">Logout</a>
 </div>
