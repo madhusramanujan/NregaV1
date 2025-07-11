@@ -7,10 +7,9 @@ include '../includes/db_connect.php';
 $districtID = $_POST['districtID'] ?? '';
 $username   = trim($_POST['username'] ?? '');
 $password   = $_POST['password'] ?? '';
-$talukID    = $_POST['talukID'] ?? '';
 
 
-if (empty($districtID) || empty($username) || empty($password) || empty($talukID)) {
+if (empty($districtID) || empty($username) || empty($password)) {
     die("All fields are required.");
 }
 

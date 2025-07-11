@@ -13,7 +13,6 @@ $username = $_SESSION['username'];
 $districtID = $_SESSION['district_id'];
 $talukID = $_SESSION['taluk_id'];
 
-// Handle date filtering
 $whereClause = "userID = $userID";
 if (!empty($_GET['from']) && !empty($_GET['to'])) {
   $from = $_GET['from'] . " 00:00:00";
@@ -198,7 +197,7 @@ while ($row = mysqli_fetch_assoc($res)) {
 </div>
 <?php } ?>
 
-<!-- 🔹 Scripts -->
+<!-- Scripts -->
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
