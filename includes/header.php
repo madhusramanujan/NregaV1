@@ -24,19 +24,24 @@
 <!-- 🔹 Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">NREGA Portal</a>
+    <a class="navbar-brand" href="https://nrega.nic.in/">NREGA Portal</a>
     <div class="collapse navbar-collapse">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
           <a class="nav-link active" href="index.php">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">About</a>
+          <a class="nav-link" href="#" onclick="myabout()">About</a>
         </li>
       </ul>
     </div>
   </div>
 </nav>
 
+<script>
+  function myabout() {
+    alert("This is a NREGA Activity Portal developed for Tracking Daily working of Narega Coordinators.");
+  }
+</script>
 <!-- 🧱 Main content container starts -->
 <main class="flex-fill container mt-5">
